@@ -16,4 +16,6 @@ def getdata(sym, close):
     df = (df.reset_index()).rename(columns={'index':'Date'})
     df['ticker'] =sym
 
+    df = df.set_index('Date')  
+
     return df
