@@ -12,7 +12,7 @@ def SMA(df, n, close):
 
 def getdata(sym, sma_value, close):
     today = datetime.datetime.now()
-    df=yf.download(sym, start=datetime.datetime(today.year-2, 1, 1),
+    df=yf.download(sym, start=datetime.datetime(today.year-1, 1, 1),
                    end=datetime.datetime(today.year, today.month, today.day))
     pd.set_option('display.max_columns', None)
 
@@ -52,7 +52,7 @@ def detect_outliers_kmeans(data, n_clusters):
     min_distances = np.min(distances, axis=1)
     
     # Set a threshold to identify outliers as samples with large distances
-    threshold = np.percentile(min_distances, 85)
+    threshold = np.percentile(min_distances,85)
     outliers = data[min_distances > threshold]
     
     return outliers
