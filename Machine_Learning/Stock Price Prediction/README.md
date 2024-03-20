@@ -20,4 +20,4 @@ Steps:
 - Find best order - with highest accuracy rate
 
 **5. Result**
-- Highest Accuracy rate of predicting next day's stock price direction of `GOOG` with ARIMA order (2,1,2) = 67.4%
+- Highest Accuracy rate of predicting next day's stock price direction of `GOOG` with ARIMA order (0,1,2) = 66.7%

@@ -11,7 +11,7 @@ import util_functions as uf
 
 ############### Parameter Control ##########
 today = datetime.datetime.now()
-end_date = datetime.datetime(today.year, today.month, today.day)
+end_date = datetime.datetime(today.year, today.month, today.day-1)
 start_date = datetime.datetime(today.year-1, 1, 1)
 
 short_sma_list = [10,20,50]
