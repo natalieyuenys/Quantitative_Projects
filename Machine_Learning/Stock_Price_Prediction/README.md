@@ -1,6 +1,7 @@
 # Stock Price Prediction
 
-This repo is for predicting the direction of next day's stock price.
+This repo is for predicting the direction of next day's stock price using technical indicators as well as lagged variables.
+
 
 Steps: 
 
@@ -18,8 +19,9 @@ Steps:
 
 **4. Fit Model** 
 - Find best order - with highest accuracy rate
+- Time series model ARIMAX and SARIMAX is used to incorporate exogenous variables and lagged variables
 
-**5. Result**
+**5. Results**
 - Highest Accuracy rate of predicting next day's stock price direction for below stocks
     - `META` with SMA20 and SMA200 = 76.4%
     - `TELA` with SMA50 and SMA100 = 75.8%
