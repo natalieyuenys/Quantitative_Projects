@@ -14,6 +14,8 @@ from sklearn.decomposition import PCA
 from sklearn.metrics import accuracy_score
 
 from statsmodels.tsa.arima.model import ARIMA
+from statsmodels.tsa.statespace.sarimax import SARIMAX
+from sklearn.metrics import mean_squared_error
 
 
 def SMA(df, n, Close):
@@ -95,6 +97,15 @@ def getdata(sym, sma_value, Close, start_date, end_date):
 
     return df
 
+def data_preprocessing(df, close):
+
+    df = df.dropna(subset=df.columns.tolist())
+    df['next_day_close'] = df[close].shift(-1)
+    df = df.dropna(subset=['next_day_close'])
+    df = df.drop(columns='ticker')
+
+    return df
+
 def kmeans_elbow_method(df):
     wcss = []  # Within-Cluster Sum of Squares
 
@@ -111,7 +122,7 @@ def kmeans_elbow_method(df):
     plt.title('Elbow Method')
     plt.show()
 
-def detect_outliers_kmeans(data, n_clusters):
+def detect_outliers_kmeans(data, n_clusters, percentile):
     # Perform K-means clustering
     kmeans = KMeans(n_clusters=n_clusters)
     kmeans.fit(data)
@@ -121,7 +132,7 @@ def detect_outliers_kmeans(data, n_clusters):
     min_distances = np.min(distances, axis=1)
     
     # Set a threshold to identify outliers as samples with large distances
-    threshold = np.percentile(min_distances,85)
+    threshold = np.percentile(min_distances,percentile)
     outliers = data[min_distances > threshold]
     
     print("Number of outliers = {}".format(len(outliers)))
@@ -156,7 +167,61 @@ def apply_PCA(df_scaled_x):
     
     return df_pca_full_x
 
-def find_best_order_accuracy(train_data, test_data, df_y, train_size, scaler_y):
+def check_overfitting(df, relevant_indicators, scaler_y, window_size, step_size):
+
+    for i in relevant_indicators[:-1]:
+
+        mse_scores_test = []
+        mse_scores_train = []
+        
+        df_temp = df[relevant_indicators].drop(columns=i)    
+        # Perform rolling window cross-validation
+        for start in range(0, len(df) - window_size + 1, step_size):
+            
+            end = start + window_size
+            
+            # Split the data into training and validation sets
+            train_data = df_temp.iloc[start:end]
+            test_data = df_temp.iloc[end:end+step_size]
+
+            train_data_endog = train_data['next_day_close']
+            train_data_exog = train_data.drop(columns='next_day_close')
+
+            test_data_endog = test_data['next_day_close']
+            test_data_exog = test_data.drop(columns='next_day_close')
+            
+            # Fit the ARIMAX model
+            model = ARIMA(endog=train_data_endog, exog=train_data_exog, order=(0, 0, 0))
+            model_fit = model.fit()
+
+            # Make predictions
+            test_predictions = model_fit.get_forecast(steps=len(test_data), exog=test_data_exog)
+            train_predictions = model_fit.get_forecast(steps=len(train_data), exog=train_data_exog)
+
+            val_predictions_mean = test_predictions.predicted_mean
+            val_predictions_mean = val_predictions_mean.values.reshape(-1,1)
+            test_pred = scaler_y.inverse_transform(val_predictions_mean)
+
+            test_endo = test_data_endog.values.reshape(-1,1)
+            test_endo = scaler_y.inverse_transform(test_endo)
+
+            train_predictions_mean = train_predictions.predicted_mean
+            train_pred = train_predictions_mean.values.reshape(-1,1)
+            train_pred = scaler_y.inverse_transform(train_pred)
+
+            train_endo = train_data_endog.values.reshape(-1,1)
+            train_endo = scaler_y.inverse_transform(train_endo)
+
+            #Calculate mean squared error (MSE) as the performance metric
+            mse_test = mean_squared_error(test_endo, test_pred)
+            mse_scores_test.append(round(mse_test,4))
+
+            mse_train = mean_squared_error(train_endo, train_pred)
+            mse_scores_train.append(round(mse_train,4))
+
+        print("Remove {} = {}\n{}".format(i,mse_scores_test,mse_scores_train))
+
+def find_best_order_arima_accuracy(train_data, test_data, df_y, train_size, scaler_y):
     train_data_endog = train_data['next_day_close']
     train_data_exog = train_data.drop(columns='next_day_close')
 
@@ -201,3 +266,61 @@ def find_best_order_accuracy(train_data, test_data, df_y, train_size, scaler_y):
                                     best_p, best_d, best_q = p,d,q
     #Print the accuracy
     print(f"Accuracy of best order ({best_p},{best_d},{best_q}) = {best_accuracy}")
+
+    return best_accuracy
+
+def find_best_order_sarimax_accuracy(train_data, test_data, df_y, train_size, scaler_y):
+
+    # Specify the order and seasonal order of the SARIMA model
+    seasonal_order = (1, 0, 0, 90)  # (P, D, Q, seasonal_periods)
+
+    train_data_endog = train_data['next_day_close']
+    train_data_exog = train_data.drop(columns='next_day_close')
+
+    test_data_endog = test_data['next_day_close']
+    test_data_exog = test_data.drop(columns='next_day_close')
+
+    best_accuracy=0
+
+    for p in range(3):
+        for d in range(2):
+            for q in range(3):
+            
+                # Create the SARIMA model
+                model = SARIMAX(endog=train_data_endog, exog=train_data_exog, order=(p,d,q), seasonal_order=seasonal_order)
+
+                # Fit the SARIMA model
+                results = model.fit()
+
+                # Forecast on the test data
+                forecast = results.get_forecast(steps=len(test_data), exog=test_data_exog)
+
+                # Get the predicted mean values
+                predicted_values = forecast.predicted_mean
+                val_predictions_mean = predicted_values.values.reshape(-1,1)
+                test_pred = scaler_y.inverse_transform(val_predictions_mean)
+                test_pred_series = pd.Series(test_pred.flatten())
+
+                # Calculate the price change from the predicted values
+                predicted_price_change = test_pred_series.diff()
+
+                # Create a binary target variable indicating if the price change is positive (1) or not (0)
+                predicted_price_up = (predicted_price_change > 0).astype(int)
+
+                # Calculate the actual price change from the test data
+                actual_price_change = df_y[train_size:].diff()
+
+                # Create a binary target variable for the actual price change
+                actual_price_up = (actual_price_change > 0).astype(int)
+
+                # Calculate the accuracy of the predictions
+                accuracy = accuracy_score(actual_price_up, predicted_price_up)
+
+                if accuracy>best_accuracy:
+                    best_accuracy = accuracy
+                    best_p, best_d, best_q = p,d,q
+
+    # Print the accuracy
+    print(f"Accuracy: {best_accuracy} with order ({best_p},{best_d},{best_q})")
+
+    return best_accuracy
