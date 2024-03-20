@@ -21,19 +21,19 @@ from sklearn.metrics import mean_squared_error
 def SMA(df, n, Close):
     return pd.Series(df[Close]).rolling(n).mean()
 
-def getdata(sym, sma_value, Close, start_date, end_date):
+def getdata(sym, sma_value, close, start_date, end_date):
     
     df=yf.download(sym, start=start_date, end=end_date)
     pd.set_option('display.max_columns', None)
 
-    df = df[['Open','High','Low',Close,'Volume']]
+    df = df[['Open','High','Low',close,'Volume']]
     df = df.reset_index().rename(columns={'index':'Date'})
     df['ticker'] = sym
 
     # Moving Averages
     for i in sma_value:
         sma_var_name = 'sma_' + str(i)
-        df[sma_var_name] = SMA(df, i, Close)
+        df[sma_var_name] = SMA(df, i, close)
     
         ema_var_name = 'ema_' + str(i)
         df[ema_var_name] = ta.trend.ema_indicator(df['Close'],i)
@@ -95,6 +95,10 @@ def getdata(sym, sma_value, Close, start_date, end_date):
     df['engulfing'] = talib.CDLENGULFING(df['Open'], df['High'], df['Low'], df['Close'])
     df['harami'] = talib.CDLHARAMI(df['Open'], df['High'], df['Low'], df['Close'])
 
+    df['lag_1_close'] = df[close].shift(1)
+    df['lag_2_close'] = df[close].shift(2)
+    df['lag_3_close'] = df[close].shift(3)
+    
     return df
 
 def data_preprocessing(df, close):
