@@ -13,7 +13,7 @@ Steps:
 
 **3. Feature Engineering: Identify relavant variables** 
 - Calculate Correlations
-- Check for overfitting
+- Check for overfitting with cross-validation
 - PCA (Principal component Analysis) to reduce dimentionality
 
 **4. Fit Model** 
