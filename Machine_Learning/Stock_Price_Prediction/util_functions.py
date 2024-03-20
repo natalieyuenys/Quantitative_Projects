@@ -17,6 +17,8 @@ from statsmodels.tsa.arima.model import ARIMA
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from sklearn.metrics import mean_squared_error
 
+import logging
+
 
 def SMA(df, n, Close):
     return pd.Series(df[Close]).rolling(n).mean()
@@ -126,7 +128,7 @@ def kmeans_elbow_method(df):
     plt.title('Elbow Method')
     plt.show()
 
-def detect_outliers_kmeans(data, n_clusters, percentile):
+def detect_outliers_kmeans(data, n_clusters, percentile, logger):
     # Perform K-means clustering
     kmeans = KMeans(n_clusters=n_clusters)
     kmeans.fit(data)
@@ -139,7 +141,7 @@ def detect_outliers_kmeans(data, n_clusters, percentile):
     threshold = np.percentile(min_distances,percentile)
     outliers = data[min_distances > threshold]
     
-    print("Number of outliers = {}".format(len(outliers)))
+    logger.info("Removed {} outliers...".format(len(outliers)))
 
     return outliers
 
@@ -225,7 +227,7 @@ def check_overfitting(df, relevant_indicators, scaler_y, window_size, step_size)
 
         print("Remove {} = {}\n{}".format(i,mse_scores_test,mse_scores_train))
 
-def find_best_order_arima_accuracy(train_data, test_data, df_y, train_size, scaler_y):
+def find_best_order_arima_accuracy(train_data, test_data, df_y, train_size, scaler_y, logger):
     train_data_endog = train_data['next_day_close']
     train_data_exog = train_data.drop(columns='next_day_close')
 
@@ -269,11 +271,11 @@ def find_best_order_arima_accuracy(train_data, test_data, df_y, train_size, scal
 
                                     best_p, best_d, best_q = p,d,q
     #Print the accuracy
-    print(f"Accuracy of best order ({best_p},{best_d},{best_q}) = {best_accuracy}")
+    logger.info(f"Accuracy of best order ({best_p},{best_d},{best_q}) = {best_accuracy}")
 
     return best_accuracy
 
-def find_best_order_sarimax_accuracy(train_data, test_data, df_y, train_size, scaler_y):
+def find_best_order_sarimax_accuracy(train_data, test_data, df_y, train_size, scaler_y, logger):
 
     # Specify the order and seasonal order of the SARIMA model
     seasonal_order = (1, 0, 0, 90)  # (P, D, Q, seasonal_periods)
@@ -325,6 +327,6 @@ def find_best_order_sarimax_accuracy(train_data, test_data, df_y, train_size, sc
                     best_p, best_d, best_q = p,d,q
 
     # Print the accuracy
-    print(f"Accuracy: {best_accuracy} with order ({best_p},{best_d},{best_q})")
+    logger.info(f"Accuracy: {best_accuracy} with order ({best_p},{best_d},{best_q})")
 
     return best_accuracy
