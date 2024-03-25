@@ -22,7 +22,7 @@ long_rsi = 14
 
 rsi_range_period = 14
 
-list_strategy = ['sma_crossover','rsi_range','rsi_crossover']
+list_strategy = ['sma_crossover','rsi_range','rsi_crossover','support_resistance_breakout']
 
 for strategy in list_strategy:
 
@@ -53,19 +53,23 @@ for strategy in list_strategy:
                 df = s.signal_sma_crossover(df_raw, close='Adj Close', sma_value=[short_sma,long_sma], stop_loss_pct=0.03)
                 df_trades, df_heatmap = bt.df_backtesting(df, ticker, risk_free_rate)
                 title = 'Performance Metrics for sma_crossover with parameter ({},{})'.format(short_sma, long_sma)
-                df_test = pd.DataFrame({ticker:df_trades['rate of return']})
 
             elif strategy == 'rsi_range':
                 df = s.signal_rsi_range(df_raw, n_periods=rsi_range_period, close='Adj Close',overbought_threshold=70, oversold_threshold=30, stop_loss_pct=0.03)
                 df_trades, df_heatmap = bt.df_backtesting(df, ticker, risk_free_rate)
                 title = 'Performance Metrics for rsi_range with parameter {}'.format(rsi_range_period)
-                df_test = pd.DataFrame({ticker:df_trades['rate of return']})
 
             elif strategy == 'rsi_crossover':            
                 df = s.signal_rsi_crossover(df_raw, close="Adj Close", list_periods=[short_rsi,long_rsi], stop_loss_pct=0.03)
                 df_trades, df_heatmap =bt.df_backtesting(df, ticker, risk_free_rate)
                 title = 'Performance Metrics for rsi_crossover with parameter ({},{})'.format(short_rsi, long_rsi)
-                df_test = pd.DataFrame({ticker:df_trades['rate of return']})
+
+            elif strategy =='support_resistance_breakout':
+                df = s.signal_breakout(df_raw, 'Adj Close', 60, 6, 10)
+                df_trades, df_heatmap =bt.df_backtesting(df, ticker, risk_free_rate)
+                title = 'Performance Metrics for support_resistance_breakout'
+            
+            df_test = pd.DataFrame({ticker:df_trades['rate of return']})
 
         except Exception as e:
             print(f"Error occurred: {e}")
