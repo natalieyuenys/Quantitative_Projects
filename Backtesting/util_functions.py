@@ -1,4 +1,5 @@
 import pandas as pd
+import util_functions as uf
 
 import yfinance as yf
 
@@ -50,9 +51,10 @@ def get_df_trade_return(df, col_position):
 
     df = df[df[col_position]!=0]
     
-    if df.loc[:,'Position'].iloc[0] == -1:
-        # Remove the first row
-        df = df.iloc[1:, :]
+    # Count from first purchase
+    first_occurrence_ind = df[col_position].eq(1).idxmax()
+
+    df = df.loc[first_occurrence_ind:]
     
     df['return'] = df['Previous_day_close'].diff()
     df['rate of return'] = df['Previous_day_close'].pct_change()
