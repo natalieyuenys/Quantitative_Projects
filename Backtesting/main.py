@@ -76,7 +76,7 @@ for strategy in list_strategy:
                         print(f"Error occurred: {e}")
                         continue
                     df_analysis_heatmap = pd.concat([df_analysis_heatmap, df_heatmap])
-            vs.gen_analysis_heatmap(df_analysis_heatmap, title)
+                vs.gen_analysis_heatmap(df_analysis_heatmap, title)
 
     elif strategy =='support_resistance_breakout':
         df_analysis_heatmap = vs.gen_heatmap_df()
