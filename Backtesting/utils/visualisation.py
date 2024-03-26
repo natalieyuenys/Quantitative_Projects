@@ -5,6 +5,24 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 
 import os
+# Create an empty dataframe with column names
+
+def gen_heatmap_df():
+    df = pd.DataFrame(
+        columns= [
+            'Stock',
+            'No. of trades', 
+            'Trade Return', 
+            'Avg Return (%)', 
+            'Best Trade (%)', 
+            'Worst Trade (%)',
+            'Win Rate (%)',
+            'Win-Loss Ratio',
+            'Sharpe Ratio'
+            ]
+        )
+
+    return df
 
 def gen_analysis_heatmap(df, title):
     # Set the 'Stock' column as the index
