@@ -3,7 +3,7 @@ import numpy as np
 
 import ta
 
-def signal_rsi_range(df, close, n_periods, overbought_threshold, oversold_threshold, stop_loss_pct):
+def get_signal(df, close, n_periods, overbought_threshold, oversold_threshold, stop_loss_pct):
     
     print("Executing RSI Range with parameter {}...".format(n_periods))
 

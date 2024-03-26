@@ -4,7 +4,7 @@ import numpy as np
 import ta
 from ta.volatility import BollingerBands
 
-def signal_bollinger_bands_range(df, close):
+def get_signal(df, close):
 
     print("Executing Bollinger Bands Range...")
 

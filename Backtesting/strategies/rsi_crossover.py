@@ -4,7 +4,7 @@ import numpy as np
 import ta
 
 
-def signal_rsi_crossover(df, close, list_periods, stop_loss_pct):
+def get_signal(df, close, list_periods, stop_loss_pct):
 
     for n_periods in list_periods:
         variable_name = 'rsi'+ str(n_periods)

@@ -16,7 +16,7 @@ def SMA(df, n, close):
     
     return pd.Series(df[close]).rolling(n).mean()
 
-def signal_sma_crossover(data, close, sma_value, stop_loss_pct):  
+def get_signal(data, close, sma_value, stop_loss_pct):  
 
     #table start
     df =  data.copy()

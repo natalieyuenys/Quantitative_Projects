@@ -60,7 +60,7 @@ def detect_breakout(df, candle, backcandles, window, close, zone_width):
             signal = 1
     return signal
 
-def signal_breakout(df, close, backcandles, window, zone_width):
+def get_signal(df, close, backcandles, window, zone_width):
 
     print("Executing Support-Resistance Breakout...")
     
