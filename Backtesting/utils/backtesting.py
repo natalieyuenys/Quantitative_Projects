@@ -1,7 +1,7 @@
 import pandas as pd
 
-import util_functions as uf
-import performance_metrics as pm
+import utils.util_functions as uf
+import utils.performance_metrics as pm
 
 def df_backtesting(df, ticker, risk_free_rate):
 

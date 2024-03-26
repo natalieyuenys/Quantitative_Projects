@@ -1,5 +1,5 @@
 import pandas as pd
-import util_functions as uf
+import utils.util_functions as uf
 
 import yfinance as yf
 

@@ -3,10 +3,10 @@ warnings.filterwarnings("ignore")
 
 import pandas as pd
 
-import util_functions as uf
+import utils.util_functions as uf
 import strategies as s
-import backtesting as bt
-import visualisation as vs
+import utils.backtesting as bt
+import utils.visualisation as vs
 
 
 list_stock = ['AAPL','TSLA','NVDA','GOOG','META','ADBE','AMZN','MSFT','KO']
