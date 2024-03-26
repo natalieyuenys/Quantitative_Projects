@@ -9,7 +9,7 @@ def df_backtesting(df, ticker, risk_free_rate):
 
     df['Previous_day_close'] = df['Adj Close'].shift(1)
 
-    df_backtest = uf.get_backtest_data(df, 6)
+    df_backtest = uf.get_backtest_data(df, 12)
 
     df_position = uf.get_df_trade_position(df_backtest, 'Position', 'Signal')
 
