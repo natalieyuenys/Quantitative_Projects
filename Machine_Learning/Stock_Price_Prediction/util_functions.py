@@ -277,7 +277,6 @@ def find_best_order_arima_accuracy(train_data, test_data, df_y, train_size, scal
 
 def find_best_order_sarimax_accuracy(train_data, test_data, df_y, train_size, scaler_y, logger):
 
-    # Specify the order and seasonal order of the SARIMA model
     seasonal_order = (1, 0, 0, 90)  # (P, D, Q, seasonal_periods)
 
     train_data_endog = train_data['next_day_close']
