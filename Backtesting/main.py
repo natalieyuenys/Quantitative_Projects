@@ -91,8 +91,6 @@ for strategy in list_strategy:
                 continue
             df_analysis_heatmap = pd.concat([df_analysis_heatmap, df_heatmap])
         vs.gen_analysis_heatmap(df_analysis_heatmap, title)
-            # df_test = pd.DataFrame({ticker:df_trades['rate of return']})
 
-        # df_hyp_test = pd.concat([df_hyp_test, df_test.reset_index(drop=True)], axis=1)
         
     
