@@ -34,4 +34,7 @@ def get_signal(df, close, sma_value, rsi_periods, oversold, overbought):
     df.loc[(df[['Open', close]].min(axis=1) < df[long_sma_col]) & (df['rsi']<oversold),'Signal'] = 1
     df.loc[(df[['Open', close]].max(axis=1) > df[short_sma_col]) & (df['rsi']>overbought),'Signal'] = -1
     
+    ''' move the signal of today to tmr, thus, we need to define a shift(1), as the signal buy is based on yesterday'''
+    df['Signal'] = df['Signal'].shift(1)
+
     return df

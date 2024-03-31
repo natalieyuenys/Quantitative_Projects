@@ -67,4 +67,7 @@ def get_signal(df, close, backcandles, window, zone_width):
     df['isPivot'] = df.apply(lambda x: isPivot(df, candle=x.name,window=3), axis=1)
     df['Signal'] = df.apply(lambda row: detect_breakout(df, row.name, backcandles=backcandles, window=window, close=close, zone_width=zone_width), axis=1)
     
+    ''' move the signal of today to tmr, thus, we need to define a shift(1), as the signal buy is based on yesterday'''
+    df['Signal'] = df['Signal'].shift(1)
+
     return df

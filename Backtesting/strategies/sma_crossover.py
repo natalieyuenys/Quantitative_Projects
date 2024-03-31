@@ -32,9 +32,6 @@ def get_signal(data, close, sma_value, stop_loss_pct):
 
     short_sma_col = 'SMA{}'.format(short_sma)
     long_sma_col = 'SMA{}'.format(long_sma)
-
-    '''To make sure row arrange in an ascending order'''
-    df.sort_values(by = 'Date',inplace=True)
     
     '''Process data by remove Null value in moving average varaible that your want to used for triggered''' 
     df.dropna(subset=[short_sma_col, long_sma_col],inplace=True)

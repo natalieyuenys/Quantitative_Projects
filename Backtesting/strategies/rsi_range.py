@@ -19,4 +19,8 @@ def get_signal(df, close, n_periods, overbought_threshold, oversold_threshold, s
 
     df.loc[df['price_change']<-stop_loss_pct,'Signal'] = -1
 
+    ''' move the signal of today to tmr, thus, we need to define a shift(1), as the signal buy is based on yesterday'''
+    df['Signal'] = df['Signal'].shift(1)
+
+
     return df
