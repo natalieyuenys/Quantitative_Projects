@@ -10,11 +10,13 @@ from strategies import rsi_range
 from strategies import support_resistance_breakout
 from strategies import mean_reversion_with_rsi
 from strategies import macd_crossover
+import utils.webscraping as ws
 import utils.backtesting as bt
 import utils.visualisation as vs
 
 
-list_stock = ['AAPL','TSLA','NVDA','GOOG','META','ADBE','AMZN','MSFT','KO']
+list_stock = ws.get_top_mkt_cap()
+# list_stock = ['AAPL','TSLA','NVDA','GOOG','META','ADBE','AMZN','MSFT','KO']
 #list_stock=['META']
 
 risk_free_rate = 2.24
